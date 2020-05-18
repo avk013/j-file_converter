@@ -22,6 +22,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     Memo1: TMemo;
     OpenDialog1: TOpenDialog;
     procedure Button1Click(Sender: TObject);
@@ -125,36 +126,46 @@ end;
     end;    end;
 procedure TForm1.Button1Click(Sender: TObject);
 var
-  data1, data2, s:string;
+  data1, data2, s, s2:string;
 begin
+data1:='_';
+data2:='+';
 if FileExists(path1) then
 begin
 data1:=FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path1)));
 //ShowMessage( FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path1))) )
 Label4.Caption:=data1;
 end
-else Label4.Caption:='недоступен файл j3271_01.way из банка ';
+else Label4.Caption:='недоступний файл j3271_01.way з банку ';
 if FileExists(path_new) then
 begin
-data2:=FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path1)));
+data2:=FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path_new)));
 //ShowMessage( FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path_new))) )
 Label5.Caption:=data2;
 end
-else Label5.Caption:='отсутвует файл j3271_01.way';
+else Label5.Caption:='вiдсутн. файл j3271_01.way';
 if (data1<>data2) then
 begin
-s:=dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path1)));
-CreateDir(dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path1))));
-if RenameFile(path_new,s+'\j3271_01.way') then
+if (data2<>'') then
 begin
-if CopyFile(path1, path_new) then
-begin end
+s:=dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new)));
+CreateDir(dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new))));
+sleep(1000);
+//CopyFile(path_new,s+'\j3271_01.way');
+//sleep(1000);
+s:=s+'\j3271_01.way';
+if CopyFile(path_new,s, True) then
+begin
+//CopyFile(path1, path_new);
+end else ShowMessage('помилка створення папки минулого файлу '+s);
+end;
+//else оказывается что тут логическая ошибка....
+// не должно так быть
+if CopyFile(path1, path_new, True) then
+begin Form1.Label7.Visible:=True; end
 else ShowMessage('помила копiювання файлу ');
-end else ShowMessage('помила створення папки минулого файлу '+s);
 end
-
 else ShowMessage('вiдмiнноъ версii файлу не знайдено');
-
 end;
 
 
@@ -191,6 +202,9 @@ path1:='\\172.16.12.3\ATTACH2$\j3271_01.way';
 path_new:='\\172.16.12.6\exim-bank\j3271_01.way';
 dir_base:='\\172.16.12.6\exim-bank\';
 Form1.Label6.Visible:=False;
+Form1.Label7.Visible:=False;
+Form1.Caption:='copy_converter v2   (C) УДП CIКЗ 2020';
+
 end;
 
 
