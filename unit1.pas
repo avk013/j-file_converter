@@ -5,7 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, FileUtil, LConvEncoding, ShellApi;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ComCtrls,
+  ExtCtrls, FileUtil, LConvEncoding, ShellApi, Types;
 
 type
 
@@ -15,7 +16,11 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    Button4: TButton;
     CheckBox1: TCheckBox;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -23,13 +28,28 @@ type
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
     Memo1: TMemo;
     OpenDialog1: TOpenDialog;
+    PageControl1: TPageControl;
+    Panel1: TPanel;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit1ChangeBounds(Sender: TObject);
+    procedure Edit1Enter(Sender: TObject);
+    procedure Edit1Exit(Sender: TObject);
+    procedure Edit1KeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
+    procedure PageControl1Change(Sender: TObject);
+    procedure TabSheet1ContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
   private
 
   public
@@ -41,7 +61,9 @@ var
   arr:   array of string;
   i:integer;
   ActualLength: Integer;
-  path1, path_new, dir_base:string ; //пути к файлам
+  path1, path_new, dir_base, base_dir, namefile:string ; //пути к файлам
+  //base_dir папка в которой программа
+  psedi:string;
 implementation
 
 {$R *.lfm}
@@ -72,8 +94,6 @@ var
   files2,  files: text;
    out1:string;
    arr2: array[1..9] of string;
-   //c: TJSONConfig;
-//  m_customName: ansistring;
 begin
 //if OpenDialog1.Execute then
 begin
@@ -131,12 +151,13 @@ begin
 data1:='_';
 data2:='+';
 if FileExists(path1) then
-begin
+begin                  // data1 новый файл
 data1:=FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path1)));
 //ShowMessage( FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path1))) )
 Label4.Caption:=data1;
 end
 else Label4.Caption:='недоступний файл j3271_01.way з банку ';
+// старый файл path_new
 if FileExists(path_new) then
 begin
 data2:=FormatDateTime('dd.mm.yyyy hh:mm', FileDateToDateTime(FileAge(path_new)));
@@ -146,14 +167,15 @@ end
 else Label5.Caption:='вiдсутн. файл j3271_01.way';
 if (data1<>data2) then
 begin
-if (data2<>'') then
+if (data2<>'+') then
 begin
-s:=dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new)));
-CreateDir(dir_base+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new))));
+//ShowMessage(data2);
+s:=base_dir+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new)));
+CreateDir(base_dir+FormatDateTime('dd.mm.yyyy', FileDateToDateTime(FileAge(path_new))));
 sleep(1000);
 //CopyFile(path_new,s+'\j3271_01.way');
 //sleep(1000);
-s:=s+'\j3271_01.way';
+s:=s+'\'+namefile;
 if CopyFile(path_new,s, True) then
 begin
 //CopyFile(path1, path_new);
@@ -162,7 +184,8 @@ end;
 //else оказывается что тут логическая ошибка....
 // не должно так быть
 if CopyFile(path1, path_new, True) then
-begin Form1.Label7.Visible:=True; end
+begin Form1.Label7.Visible:=True;
+ ShowMessage('файл вiд '+data1+' завантажено') end
 else ShowMessage('помила копiювання файлу ');
 end
 else ShowMessage('вiдмiнноъ версii файлу не знайдено');
@@ -191,19 +214,74 @@ begin
   else ShowMessage('файл (за замовченням) для конвертування не знайдено ');
 end;
 
+procedure TForm1.Button4Click(Sender: TObject);
+begin
+
+end;
+
 procedure TForm1.CheckBox1Change(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.Edit1ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.Edit1Enter(Sender: TObject);
+begin
+   edit1.text:='';
+end;
+
+procedure TForm1.Edit1Exit(Sender: TObject);
+begin
+if (psedi='1112') then
+begin
+panel1.Visible:=true;
+edit2.Text:=path1;
+edit3.Text:=path_new;
+end;
+psedi:=edit1.text;
+edit1.text:='********';
+end;
+
+procedure TForm1.Edit1KeyPress(Sender: TObject; var Key: char);
 begin
 
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+pagecontrol1.ActivePage:=TabSheet1;
+// fignia GetDir(0,base_dir);
+base_dir:=ExtractFileDir(Application.ExeName)+'\';
 path1:='\\172.16.12.3\ATTACH2$\j3271_01.way';
-path_new:='\\172.16.12.6\exim-bank\j3271_01.way';
+//path_new:='\\172.16.12.6\exim-bank\
+namefile:='j3271_01.way';
 dir_base:='\\172.16.12.6\exim-bank\';
+path_new:=base_dir+'j3271_01.way';
 Form1.Label6.Visible:=False;
 Form1.Label7.Visible:=False;
 Form1.Caption:='copy_converter v2   (C) УДП CIКЗ 2020';
+Button2.Caption:='конв.з'+#10#13+'папки';
+panel1.Visible:=false;
+
+end;
+
+procedure TForm1.PageControl1Change(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.TabSheet1ContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
 
 end;
 
