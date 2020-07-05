@@ -18,6 +18,7 @@ type
     Button3: TButton;
     Button4: TButton;
     CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
@@ -123,11 +124,14 @@ begin
   AddLineToArr(s);
  // c.SetValue('/Systems/CustomName', UTF8Decode(CP1252ToUTF8(m_customName)));
 //  Memo1.Lines.Add(s);
- ss:=cl(copy(s,0,36))+','+cl(copy(s,37,36))+','+cl(copy(s,73,36))+','+cl(copy(s,109,36))+','+cl(copy(s,145,25))+','+cl(copy(s,172,5))+','+cl(copy(s,177,31))+','+cl(copy(s,209,11));
- ss:=cp1251toutf8(ss);
+// ss:=cl(copy(s,0,36))+','+cl(copy(s,37,36))+','+cl(copy(s,73,36))+','+cl(copy(s,109,36))+','+cl(copy(s,145,25))+','+cl(copy(s,172,5))+','+cl(copy(s,177,31))+','+cl(copy(s,209,11));
+  ss:=cl(copy(s,0,36))+';'+cl(copy(s,37,36))+';'+cl(copy(s,73,36))+';'+cl(copy(s,109,36))+';'+cl(copy(s,145,25))+';'+cl(copy(s,172,5))+';'+cl(copy(s,177,31))+';'+cl(copy(s,209,11));
+if form1.CheckBox2.Checked=True then
+begin ss:=cp1251toutf8(ss);
  Form1.Memo1.Lines.Add(ss);
+ end
+else  Form1.Memo1.Lines.Add(cp1251toutf8(ss));
  WriteLn(files2,ss);
-
 end;
 finally
  // ShowMessage(AnsiToUtf8( s));
